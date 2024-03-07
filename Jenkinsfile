@@ -34,7 +34,7 @@ pipeline {
                     // Replace the image in the Kubernetes deployment with the new version
                     withCredentials([file(credentialsId: 'my-kube-cluster', variable: 'KUBECONFIG')]) {
                         // Use the proper deployment and container name, and remove --record
-                        sh "kubectl set image deployment/ssurvey-deployment ssurvey-container=${DOCKER_IMAGE}:${VERSION}"
+                        sh "kubectl set image deployment/ssurvey-deployment ssurvey=${DOCKER_IMAGE}:${VERSION}"
                     }
                 }
             }
