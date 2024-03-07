@@ -5,7 +5,7 @@ pipeline {
         // Define your Docker image name here
         DOCKER_IMAGE = 'saadatkhan/ssurvey'
         // Define the version/tag. Using Jenkins build number for uniqueness
-        VERSION = "v${latest}"
+        VERSION = "latest"
     }
 
     stages {
