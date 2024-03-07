@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ssurvey-deployment
+spec:
+  replicas: 3  # Specify 3 replicas
+  selector:
+    matchLabels:
+      app: ssurvey
+  template:
+    metadata:
+      labels:
+        app: ssurvey
+    spec:
+      containers:
+      - name: ssurvey
+        image: saadatkhan/ssurvey:latest  # Replace with your actual image
+        ports:
+        - containerPort: 8080
