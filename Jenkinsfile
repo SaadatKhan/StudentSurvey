@@ -36,7 +36,7 @@ pipeline {
                     // Replace the image in the Kubernetes deployment with the new version
                     withCredentials([file(credentialsId: 'my-kube-cluster', variable: 'KUBECONFIG')]) {
                         sh """
-                           kubectl set image deployment/student-survey-deployment student-survey-container=${DOCKER_IMAGE}:${VERSION} --record
+                           kubectl set image deployment/ssurvey-deployment student-survey-container=${DOCKER_IMAGE}:${VERSION} --record
                            """
                     }
                 }
