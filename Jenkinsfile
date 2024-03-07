@@ -2,17 +2,16 @@ pipeline {
     agent any
 
     environment {
-        // Define your Docker image name here
         DOCKER_IMAGE = 'saadatkhan/ssurvey'
-        // Define the version/tag. Using Jenkins build number for uniqueness
-        VERSION = "latest"
+        // Change 'latest' to use the Jenkins build number
+        VERSION = "${BUILD_NUMBER}" 
     }
 
     stages {
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Build the Docker image
+                    // Build the Docker image with the Jenkins build number as tag
                     sh "docker build -t ${DOCKER_IMAGE}:${VERSION} ."
                 }
             }
@@ -24,7 +23,7 @@ pipeline {
                     withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
                         sh "echo ${DOCKERHUB_PASSWORD} | docker login --username ${DOCKERHUB_USERNAME} --password-stdin"
                     }
-                    // Push the Docker image
+                    // Push the Docker image with the Jenkins build number as tag
                     sh "docker push ${DOCKER_IMAGE}:${VERSION}"
                 }
             }
@@ -32,12 +31,10 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    // Assuming you have a deployment.yaml that needs the image to be set
                     // Replace the image in the Kubernetes deployment with the new version
                     withCredentials([file(credentialsId: 'my-kube-cluster', variable: 'KUBECONFIG')]) {
-                        sh """
-                           kubectl set image deployment/ssurvey-deployment ssurvey=${DOCKER_IMAGE}:${VERSION} --record
-                           """
+                        // Use the proper deployment and container name, and remove --record
+                        sh "kubectl set image deployment/ssurvey-deployment ssurvey-container=${DOCKER_IMAGE}:${VERSION}"
                     }
                 }
             }
@@ -45,7 +42,7 @@ pipeline {
     }
     post {
         always {
-            // Optionally clean up Docker images to save space
+            // Clean up Docker images to save space
             sh "docker rmi ${DOCKER_IMAGE}:${VERSION}"
         }
     }
